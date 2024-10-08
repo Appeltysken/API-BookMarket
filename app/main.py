@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query
 from utils import json_to_dict_list
 import os
 from typing import Optional
-from .models import User
+from app.users_book.schemas import User
 
 # Получаем путь к директории текущего скрипта
 script_dir = os.path.dirname(os.path.abspath(__file__))
