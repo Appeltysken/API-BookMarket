@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from utils import json_to_dict_list
 import os
 from typing import Optional
+from .models import User
 
 # Получаем путь к директории текущего скрипта
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -18,14 +19,15 @@ app = FastAPI()
 def main_page():
     return {"message": "This is homepage."}
 
-@app.get("/users-book")
-def get_all_users(id: Optional[int] = None):
+@app.get("/users-book", response_model=list[User])
+def get_all_users():
     users = json_to_dict_list(path_to_json)
-    if id is None:
-        return users
-    else:
-        return_list = []
-        for user in users:
-            if user["id"] == id:
-                return_list.append(user)
-        return return_list
+    return users
+        
+@app.get("/users-book/{id}", response_model=User)
+def get_user_from_param_id(id: int):
+    users = json_to_dict_list(path_to_json)
+    for user in users:
+        if user["id"] == id:
+            return user
+    return {"error": "User not found"}, 404
