@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from utils import json_to_dict_list
 import os
 from typing import Optional
@@ -20,8 +20,14 @@ def main_page():
     return {"message": "This is homepage."}
 
 @app.get("/users-book", response_model=list[User])
-def get_all_users():
+def get_users(Fname: Optional[str] = Query(None), Lname: Optional[str] = Query(None)):
     users = json_to_dict_list(path_to_json)
+    
+    if Fname:
+        users = [user for user in users if user["Fname"].lower() == Fname.lower()]
+    if Lname:
+        users = [user for user in users if user["Lname"].lower() == Lname.lower()]
+    
     return users
         
 @app.get("/users-book/{id}", response_model=User)
