@@ -2,3 +2,9 @@
 /users.json
 /venv
 /__pycache__
+app/migration/README
+app/migration/__pycache__/env.cpython-312.pyc
+app/migration/script.py.mako
+app/migration/versions/__pycache__/86f0c2a4c870_initial_revision.cpython-312.pyc
+app/users_book/__pycache__/models.cpython-312.pyc
+app/users_book/__pycache__/schemas.cpython-312.pyc
