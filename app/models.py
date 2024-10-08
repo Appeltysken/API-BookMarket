@@ -14,13 +14,13 @@ class User(BaseModel):
     id: int
     username: str = Field(default=..., description="Логин пользователя, которым выступает номер телефона/адрес эл. почты")
     password: str = Field(default=..., min_length=8, description="Пароль пользователя, минимальная длина - 8 символов")
-    Fname: str = Field(default=..., min_length=1, max_length=50, description="Имя пользователя, от 1 до 50 символов")
-    Lname: date = Field(default=..., min_length=1, max_length=50, description="Фамилия пользователя, от 1 до 50 символов")
-    sex: str = Field(default=..., description="Пол пользователя")
-    email: EmailStr = Field(default=..., description="Электронная почта пользователя")
-    phone: str = Field(default=..., description="Номер телефона пользователя")
-    sell_history: str = Field(default=..., description="История продаж")
-    buy_history: str = Field(default=..., description="История покупок")
+    Fname: str = Field(default=None, min_length=1, max_length=50, description="Имя пользователя, от 1 до 50 символов")
+    Lname: str = Field(default=None, min_length=1, max_length=50, description="Фамилия пользователя, от 1 до 50 символов")
+    sex: Gender = Field(default=..., description="Пол пользователя")
+    email: EmailStr = Field(default=None, description="Электронная почта пользователя")
+    phone: Optional[str] = Field(default=None, description="Номер телефона пользователя")
+    sell_history: Optional[str] = Field(default=None, description="История продаж")
+    buy_history: Optional[str] = Field(default=None, description="История покупок")
 
     @field_validator('username')
     @classmethod
@@ -63,3 +63,28 @@ class User(BaseModel):
             raise ValueError('Номер телефона должен начинаться с "+" и содержать от 1 до 15 цифр')
         
         return values
+
+
+#### -------- Test validation ---------  
+def test_valid_user(data: dict) -> None:
+    try:
+        user = User(**data)
+        print(user)
+    except ValidationError as e:
+        print(f"Ошибка валидации: {e}")
+        
+user_data = {
+    "id": 5,
+    "username": "89856668844",
+    "password": "AS2@xmaWq",
+    "Fname": "Ivan",
+    "Lname": "Ivanov",
+    "sex": "Мужской",
+    "email": "Test@gmail.com",
+    "phone": "+89856884433",
+    "sell_history": '',
+    "buy_history": ''
+}
+
+test_valid_user(user_data)
+#### ----------------------------------
