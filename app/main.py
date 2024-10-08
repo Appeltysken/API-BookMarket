@@ -1,59 +1,31 @@
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from fastapi import FastAPI
+from utils import json_to_dict_list
 import os
-from typing import List
-from .models import UserModel, User, UserCreate, UserBookResponse
-from .database import get_db
-import secrets
-from fastapi import FastAPI, Depends, HTTPException, Security
-from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
 
-DATABASE_URL = "sqlite:///app./test.db"
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Получаем путь к директории текущего скрипта
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-UserModel.__table__.create(bind=engine, checkfirst=True)
+# Переходим на уровень выше
+parent_dir = os.path.dirname(script_dir)
+
+# Получаем путь к JSON
+path_to_json = os.path.join(parent_dir, 'users.json')
 
 app = FastAPI()
 
 @app.get("/")
-def home_page():
-    return {"message": "Main Page"}
+def main_page():
+    return {"message": "This is homepage."}
 
-@app.get("/api/users-book", response_model=List[User])
-def get_all_users(db: Session = Depends(get_db)):
-    users = db.query(UserModel).all()
-    return users
-
-@app.get("/api/users-book/{user_id}", response_model=UserBookResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(UserModel).filter(UserModel.id == user_id).first()
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    user_data = {
-        "id": user.id,
-        "attributes": {
-            "username": user.username,
-            "createdAt": user.createdAt,
-            "updatedAt": user.updatedAt,
-            "publishedAt": user.publishedAt,
-            "Fname": user.Fname,
-            "Lname": user.Lname,
-            "sex": user.sex,
-            "email": user.email,
-            "phone": user.phone,
-            "reg_date": user.reg_date,
-        }
-    }
-    
-    return UserBookResponse(data=user_data, meta={})
-
-@app.post("/api/users-book", response_model=User)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = UserModel(**user.dict())
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+@app.get("/users-book")
+def get_all_users(id: Optional[int] = None):
+    users = json_to_dict_list(path_to_json)
+    if id is None:
+        return users
+    else:
+        return_list = []
+        for user in users:
+            if user["id"] == id:
+                return_list.append(user)
+        return return_list
