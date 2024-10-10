@@ -12,7 +12,8 @@ from alembic import context
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from app.database import DATABASE_URL, Base
-from app.users_book.models import User
+from app.users.models import User
+from app.orders.models import Order
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
