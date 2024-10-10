@@ -19,13 +19,6 @@ async def get_order_by_id(id: int) -> SOrder | dict:
         return {'message': f'Заказ по данному ID не найден.'}
     return result
 
-# @router.get("/by_filter", summary="Получить заказ через параметр")
-# async def get_order_by_filter(request_body: RBOrder = Depends()) -> SOrder | dict:
-#    result = await OrderDAO.find_one_or_none(**request_body.to_dict())
-#    if result is None:
-#        return {'message': f'Заказ по данному параметру не найден.'}
-#    return result
-
 @router.post("/add", summary="Добавить заказ через ID")
 async def register_user(order: SOrderAdd) -> dict:
     check = await OrderDAO.add(**order.dict())
@@ -34,20 +27,21 @@ async def register_user(order: SOrderAdd) -> dict:
     else:
         return {"message": "Заказ не удалось добавить."}
     
-@router.put("/update", summary="Обновить заказ по ID")
-async def update_user_handler(filter_order: UpdateFilter, new_data: OrderUpdate):
+@router.put("/update/{id}", summary="Обновить заказ по ID")
+async def update_user_handler(id: int, new_data: OrderUpdate):
     update_data = new_data.dict(exclude_unset=True)
     if not update_data:
-        raise HTTPException(status_code=400, detail="Нет данных для обновления")
-    check = await OrderDAO.update(filter_order.dict(), update_data)
+        raise HTTPException(status_code=400, detail="Нет данных для обновления.")
+    
+    check = await OrderDAO.update(id=id, update_data=update_data)
     if check:
         return {"message": "Информация о заказе успешно обновлена."}
     else:
         raise HTTPException(status_code=400, detail="Ошибка при обновлении информации о заказе.")
     
-@router.delete("/delete", summary="Удалить заказ по ID")
-async def delete_user_handler(filter_user: DeleteFilter):
-    check = await OrderDAO.delete(**filter_user.dict())
+@router.delete("/delete/{id}", summary="Удалить заказ по ID")
+async def delete_user_handler(id: int):
+    check = await OrderDAO.delete(id=id)
     if check:
         return {"message": "Заказ успешно удалён."}
     else:
