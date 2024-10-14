@@ -48,7 +48,11 @@ class BaseUser(BaseModel):
 
 class User(BaseUser):
     id: int
+    role_id: int = Field(None, description="Роль пользователя")
     
+    class Config:
+        orm_mode = True
+        
 class UpdateFilter(BaseModel):
     id: int
 
@@ -58,3 +62,7 @@ class UserUpdate(BaseUser):
 
 class DeleteFilter(BaseModel):
     id: int
+    
+class UserAuth(BaseModel):
+    username: str = Field(..., description="Username должен быть номером телефона или адресом эл. почты")
+    password: str = Field(..., min_lenght=8, description="Пароль пользователя")

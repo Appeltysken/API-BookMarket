@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, text
 from app.database import Base, str_uniq, int_pk, str_null_true, int_null_true
 from passlib.context import CryptContext
 from typing import List
+from app.roles.models import Role
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -23,22 +24,20 @@ class User(Base):
     phone: Mapped[str_uniq]
     sell_history: Mapped[str_null_true]
     buy_history: Mapped[str_null_true]
+    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1)
 
     orders: Mapped[List["Order"]] = relationship("Order", back_populates="user", cascade="all, delete-orphan")
-    
-    def set_password(self, password: str):
-        self.password = pwd_context.hash(password)
+    role: Mapped["Role"] = relationship("Role", back_populates="users")
 
-    def verify_password(self, password: str) -> bool:
-        return pwd_context.verify(password, self.password)
-
+    extend_existing = True
+        
     def __str__(self):
         return (f"{self.__class__.__name__}(id={self.id}, "
                 f"first_name={self.Fname!r}, "
                 f"last_name={self.Lname!r})")
 
     def __repr__(self):
-        return str(self)
+        return f"{self.__class__.__name__}(id={self.id})"
 
     def to_dict(self):
         return {
@@ -51,5 +50,6 @@ class User(Base):
             "email": self.email,
             "phone": self.phone,
             "sell_history": self.sell_history,
-            "buy_history": self.buy_history
+            "buy_history": self.buy_history,
+            "role_id": self.role_id
         }
