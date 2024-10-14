@@ -19,7 +19,7 @@ async def get_order_by_id(id: int) -> SOrder | dict:
         return {'message': f'Заказ по данному ID не найден.'}
     return result
 
-@router.post("/add", summary="Добавить заказ через ID")
+@router.post("/add", summary="Добавить заказ")
 async def register_user(order: SOrderAdd) -> dict:
     check = await OrderDAO.add(**order.dict())
     if check:
