@@ -12,3 +12,4 @@ app/__pycache__/main.cpython-312.pyc
 app/__pycache__/database.cpython-312.pyc
 app/__pycache__/models.cpython-312.pyc
 /.env
+/uploads
