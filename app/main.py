@@ -3,8 +3,13 @@ import os
 from app.users.router import router as router_users
 from app.orders.router import router as router_orders
 from app.roles.router import router as router_roles
+from app.roles.models import init_roles
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    await init_roles()
 
 @app.get("/", summary="Основная страница")
 def main_page():
