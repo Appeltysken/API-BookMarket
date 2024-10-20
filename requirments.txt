@@ -2,6 +2,7 @@ alembic==1.13.3
 annotated-types==0.7.0
 anyio==4.6.0
 asyncpg==0.29.0
+bcrypt==4.0.1
 certifi==2024.8.30
 charset-normalizer==3.3.2
 click==8.1.7
