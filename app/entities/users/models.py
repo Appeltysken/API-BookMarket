@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, text
-from app.database import Base, str_uniq, int_pk, str_null_true, int_null_true
+from app.database import Base, str_uniq, int_pk, str_null_true, int_null_true, str_uniq_but_nullable
 from passlib.context import CryptContext
 from typing import List
-from app.roles.models import Role
+from app.entities.roles.models import Role
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -17,13 +17,9 @@ class User(Base):
     id: Mapped[int_pk]
     username: Mapped[str_uniq]
     password: Mapped[str]
-    Fname: Mapped[str]
-    Lname: Mapped[str]
     sex: Mapped[str]
-    email: Mapped[str_uniq]
-    phone: Mapped[str_uniq]
-    sell_history: Mapped[str_null_true]
-    buy_history: Mapped[str_null_true]
+    sell_history: Mapped[str_null_true | None]
+    buy_history: Mapped[str_null_true | None]
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1)
     profile_picture: Mapped[str | None]
 
@@ -44,7 +40,6 @@ class User(Base):
         return {
             "id": self.id,
             "username": self.username,
-            "password": self.password,
             "Fname": self.Fname,
             "Lname": self.Lname,
             "sex": self.sex,

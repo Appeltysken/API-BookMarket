@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.orders.dao import OrderDAO
-from app.orders.rb import RBOrder
-from app.orders.schemas import Order as SOrder
-from app.orders.schemas import OrderAdd as SOrderAdd
-from app.orders.schemas import UpdateFilter, OrderUpdate, DeleteFilter
+from app.entities.orders.dao import OrderDAO
+from app.entities.orders.rb import RBOrder
+from app.entities.orders.schemas import Order as SOrder
+from app.entities.orders.schemas import OrderAdd as SOrderAdd
+from app.entities.orders.schemas import UpdateFilter, OrderUpdate, DeleteFilter
 
 router = APIRouter(prefix='/orders', tags=['Работа с заказами'])
 

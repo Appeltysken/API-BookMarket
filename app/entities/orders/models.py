@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy import ForeignKey,  text
 from app.database import Base, int_pk, int_null_true
-from app.users.models import User
+from app.entities.users.models import User
 
 class Order(Base):
     __tablename__ = 'orders'

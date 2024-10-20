@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-from app.users.dao import UserDAO
+from app.entities.users.dao import UserDAO
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 from app.config import get_auth_data

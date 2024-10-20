@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.users.dao import UserDAO
-from app.users.schemas import User
-from app.roles.dao import RoleDAO
-from app.users.dependencies import get_current_admin_user
+from app.entities.users.dao import UserDAO
+from app.entities.users.schemas import User
+from app.entities.roles.dao import RoleDAO
+from app.entities.users.dependencies import get_current_admin_user
 
 router = APIRouter(prefix='/roles', tags=['Работа с ролями пользователей'])
 

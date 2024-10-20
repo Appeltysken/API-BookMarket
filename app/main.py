@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 import os
-from app.users.router import router as router_users
-from app.orders.router import router as router_orders
-from app.roles.router import router as router_roles
-from app.roles.models import init_roles
+from app.entities.users.router import router as router_users
+from app.entities.orders.router import router as router_orders
+from app.entities.roles.router import router as router_roles
+from app.entities.roles.models import init_roles
 
 app = FastAPI()
 

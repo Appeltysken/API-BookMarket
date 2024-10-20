@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File, Request
-from app.users.dao import UserDAO
-from app.users.auth import get_password_hash, authenticate_user, create_access_token
-from app.users.schemas import User as SUser
-from app.users.schemas import BaseUser, UserAuth, UserUpdate, UserPhoto
-from app.users.dependencies import get_current_user, get_current_admin_user
+from app.entities.users.dao import UserDAO
+from app.entities.users.auth import get_password_hash, authenticate_user, create_access_token
+from app.entities.users.schemas import User as SUser
+from app.entities.users.schemas import BaseUser, UserAuth, UserUpdate, UserPhoto
+from app.entities.users.dependencies import get_current_user, get_current_admin_user
 from fastapi.responses import FileResponse, JSONResponse
 import os
 

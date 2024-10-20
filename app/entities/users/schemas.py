@@ -1,7 +1,6 @@
 import re
 from pydantic import BaseModel, EmailStr, Field, validator, ConfigDict
 from typing import Optional
-from fastapi import UploadFile, File
 
 class BaseUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)

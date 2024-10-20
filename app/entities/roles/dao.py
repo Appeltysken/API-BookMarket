@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.service.base import BaseDAO
-from app.roles.models import Role
+from app.entities.roles.models import Role
 
 router = APIRouter(prefix='/roles', tags=['Роли'])
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.service.base import BaseDAO
-from app.users.models import User
+from app.entities.users.models import User
 
 router = APIRouter(prefix='/users', tags=['Пользователи'])
 

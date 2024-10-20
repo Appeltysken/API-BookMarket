@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.service.base import BaseDAO
-from app.orders.models import Order
+from app.entities.orders.models import Order
 
 router = APIRouter(prefix='/orders', tags=['Заказы'])
 
