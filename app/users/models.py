@@ -9,7 +9,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Вернуться потом к /articles/828328/, когда будешь делать
 # другие сущности и нужно будет передать им значения в виде числа
-# а возвращалось через Foreign Key название
+# а возвращалось через Foreign Key название или пофиг
 
 class User(Base):
     __tablename__ = "users"
@@ -25,6 +25,7 @@ class User(Base):
     sell_history: Mapped[str_null_true]
     buy_history: Mapped[str_null_true]
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1)
+    profile_picture: Mapped[str | None]
 
     orders: Mapped[List["Order"]] = relationship("Order", back_populates="user", cascade="all, delete-orphan")
     role: Mapped["Role"] = relationship("Role", back_populates="users")
@@ -51,5 +52,6 @@ class User(Base):
             "phone": self.phone,
             "sell_history": self.sell_history,
             "buy_history": self.buy_history,
-            "role_id": self.role_id
+            "role_id": self.role_id,
+            "profile_picture": self.profile_picture
         }

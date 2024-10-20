@@ -1,6 +1,7 @@
 import re
 from pydantic import BaseModel, EmailStr, Field, validator, ConfigDict
 from typing import Optional
+from fastapi import UploadFile, File
 
 class BaseUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -13,7 +14,7 @@ class BaseUser(BaseModel):
     phone: Optional[str] = Field(None, description="Номер телефона пользователя")
     sell_history: Optional[str] = Field(None, description="История продаж")
     buy_history: Optional[str] = Field(None, description="История покупок")
-
+    
     @validator('username')
     @classmethod
     def validate_username(cls, value):
@@ -66,3 +67,6 @@ class DeleteFilter(BaseModel):
 class UserAuth(BaseModel):
     username: str = Field(..., description="Username должен быть номером телефона или адресом эл. почты")
     password: str = Field(..., min_lenght=8, description="Пароль пользователя")
+    
+class UserPhoto(BaseModel):
+    profile_picture: Optional[str] = Field(None, description="Название изображения")
