@@ -17,7 +17,11 @@ class User(Base):
     id: Mapped[int_pk]
     username: Mapped[str_uniq]
     password: Mapped[str]
+    Fname: Mapped[str_null_true | None]
+    Lname: Mapped[str_null_true | None]
     sex: Mapped[str]
+    email: Mapped[str_uniq_but_nullable | None]
+    phone: Mapped[str_uniq_but_nullable | None]
     sell_history: Mapped[str_null_true | None]
     buy_history: Mapped[str_null_true | None]
     role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"), default=1)

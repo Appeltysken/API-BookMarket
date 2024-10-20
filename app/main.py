@@ -4,12 +4,17 @@ from app.entities.users.router import router as router_users
 from app.entities.orders.router import router as router_orders
 from app.entities.roles.router import router as router_roles
 from app.entities.roles.models import init_roles
+from app.entities.users.dependencies import create_default_admin
 
 app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
     await init_roles()
+    
+@app.on_event("startup")
+async def startup_event():
+    await create_default_admin()
 
 @app.get("/", summary="Основная страница")
 def main_page():

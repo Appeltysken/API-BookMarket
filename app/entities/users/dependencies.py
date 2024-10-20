@@ -40,3 +40,17 @@ async def get_current_admin_user(current_user: User = Depends(get_current_user))
         return current_user
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Недостаточно прав!')
 
+async def create_default_admin():
+    admin_exists = await UserDAO.find_one_or_none(role_id=2)
+    
+    if admin_exists:
+        return
+
+    admin_data = {
+        "username": settings.ADMIN_USERNAME,
+        "password": get_password_hash(settings.ADMIN_PASSWORD),
+        "role_id": 2,
+        "sex": "Мужской"
+    }
+
+    await UserDAO.add(**admin_data)
