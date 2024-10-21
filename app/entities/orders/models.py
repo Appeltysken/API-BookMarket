@@ -7,9 +7,9 @@ class Order(Base):
     __tablename__ = 'orders'
     
     id: Mapped[int_pk]
-    status: Mapped[str] = mapped_column(server_default=text("Ожидает обработки"))
+    status: Mapped[str] = mapped_column(server_default=text("'Ожидает обработки'"))
     price: Mapped[int_null_true]
-    user_id: Mapped[int_null_true] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int_null_true] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     
     user: Mapped["User"] = relationship("User", back_populates="orders")
     
