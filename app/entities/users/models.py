@@ -29,6 +29,8 @@ class User(Base):
 
     orders: Mapped[List["Order"]] = relationship("Order", back_populates="user", cascade="all, delete-orphan")
     role: Mapped["Role"] = relationship("Role", back_populates="users")
+    reviews: Mapped["Review"] = relationship("Review", back_populates="users")
+    books: Mapped["Book"] = relationship("Book", back_populates="users")
 
     extend_existing = True
         
