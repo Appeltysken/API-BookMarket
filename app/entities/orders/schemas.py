@@ -7,13 +7,24 @@ class Order(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     status: str = Field(..., description="Статус заказа")
-    price: int = Field(None, description="Стоимость заказа")
     price: Optional[Decimal] = Field(None, description="Стоимость заказа")
     user_id: int = Field(..., description="ID пользователя, которому принадлежит заказ")
+    
+    @validator('price')
+    def validate_price(cls, value):
+        if value < 0:
+            raise ValueError('Цена не может быть отрицательной')
+        return value
     
 class OrderAdd(BaseModel):
     price: int = Field(None, description="Стоимость заказа")
     user_id: int = Field(..., description="ID пользователя, которому принадлежит заказ")
+    
+    @validator('price')
+    def validate_price(cls, value):
+        if value < 0:
+            raise ValueError('Цена не может быть отрицательной')
+        return value
     
 class UpdateFilter(BaseModel):
     id: int
@@ -22,6 +33,12 @@ class OrderUpdate(BaseModel):
     status: Optional[str] = Field(None, description="Статус заказа")
     price: Optional[int] = Field(None, description="Стоимость заказа")
     user_id: Optional[int] = Field(None, description="ID пользователя, которому принадлежит заказ")
+    
+    @validator('price')
+    def validate_price(cls, value):
+        if value < 0:
+            raise ValueError('Цена не может быть отрицательной')
+        return value
     
 class DeleteFilter(BaseModel):
     id: int
