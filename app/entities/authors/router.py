@@ -21,7 +21,7 @@ async def get_author_by_id(id: int) -> SAuthor | dict:
     return result
 
 @router.post("/add", summary="Добавить автора")
-async def register_user(author: SAuthorAdd, current_user: SUser = Depends(get_current_user)) -> dict:
+async def add_author(author: SAuthorAdd, current_user: SUser = Depends(get_current_user)) -> dict:
     if current_user.role_id == 2:
         check = await AuthorDAO.add(**author.dict())
         if check:
@@ -31,7 +31,7 @@ async def register_user(author: SAuthorAdd, current_user: SUser = Depends(get_cu
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
     
 @router.put("/update/{id}", summary="Обновить автора по ID")
-async def update_user_handler(id: int, new_data: AuthorUpdate, current_user: SUser = Depends(get_current_user)):
+async def update_author_handler(id: int, new_data: AuthorUpdate, current_user: SUser = Depends(get_current_user)):
     if current_user.role_id == 2:
         update_data = new_data.dict(exclude_unset=True)
         if not update_data:
@@ -45,7 +45,7 @@ async def update_user_handler(id: int, new_data: AuthorUpdate, current_user: SUs
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
     
 @router.delete("/delete/{id}", summary="Удалить автора по ID")
-async def delete_user_handler(id: int, current_user: SUser = Depends(get_current_user)):
+async def delete_author_handler(id: int, current_user: SUser = Depends(get_current_user)):
     if current_user.role_id == 2:
         check = await AuthorDAO.delete(id=id)
         if check:
@@ -55,18 +55,18 @@ async def delete_user_handler(id: int, current_user: SUser = Depends(get_current
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
 
 @router.post("/profile_picture/{id}", summary="Загрузить изображение профиля автора")
-async def upload_profile_picture(id: int, author_picture: UploadFile = File(...), current_user: SUser = Depends(get_current_user)):
+async def upload_author_picture(id: int, author_picture: UploadFile = File(...), current_user: SUser = Depends(get_current_user)):
     if current_user.role_id == 2:
         picture = await AuthorDAO.upload_image(entity_name="authors", entity_id=id, file=author_picture, image_field="author_picture")
         return picture
 
 @router.get("/profile_picture/{id}", summary="Получить изображение автора")
-async def get_profile_picture(id: int):
+async def get_author_picture(id: int):
     picture = await AuthorDAO.get_image(entity_name="authors", entity_id=id, image_field="author_picture")
     return picture
 
 @router.delete("/profile_picture/{id}", summary="Удалить изображение автора")
-async def delete_profile_picture(id: int, current_user: SUser = Depends(get_current_user)):
+async def delete_author_picture(id: int, current_user: SUser = Depends(get_current_user)):
     if current_user.role_id == 2:
         picture = await AuthorDAO.delete_image(entity_name="authors", entity_id=id, image_field="author_picture")
         return picture
