@@ -68,4 +68,6 @@ class UserAuth(BaseModel):
     password: str = Field(..., min_lenght=8, description="Пароль пользователя")
     
 class UserPhoto(BaseModel):
+    id: int
+    role_id: int = Field(None, description="Роль пользователя")
     profile_picture: Optional[str] = Field(None, description="Название изображения")

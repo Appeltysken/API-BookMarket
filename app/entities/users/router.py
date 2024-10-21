@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Response, UploadFile, File
 from app.entities.users.dao import UserDAO
 from app.entities.users.auth import get_password_hash, authenticate_user, create_access_token
 from app.entities.users.schemas import User as SUser
+from app.entities.users.rb import RBUser
 from app.entities.users.schemas import BaseUser, UserAuth, UserUpdate, UserPhoto
 from app.entities.users.dependencies import get_current_user, get_current_admin_user
-from fastapi.responses import FileResponse, JSONResponse
 import os
 
 if not os.path.exists("uploads"):
@@ -15,8 +15,8 @@ UPLOAD_FOLDER = "uploads/"
 router = APIRouter(prefix='/users', tags=['Работа с пользователями'])
 
 @router.get("/", summary="Получить всех пользователей")
-async def get_all_users(current_admin_user: SUser = Depends(get_current_admin_user)) -> list[SUser]:
-    return await UserDAO.find_all()
+async def get_all_users(request_body: RBUser = Depends(), current_admin_user: SUser = Depends(get_current_admin_user)) -> list[SUser]:
+    return await UserDAO.find_all(**request_body.to_dict())
 
 @router.get("/{id}", summary="Получить пользователя через ID")
 async def get_user_by_id(id: int, current_user: SUser = Depends(get_current_user)) -> SUser | dict:
@@ -89,49 +89,18 @@ async def delete_user_handler(id: int, current_user: SUser = Depends(get_current
 
 @router.post("/profile_picture/{id}", summary="Загрузить изображение профиля пользователя")
 async def upload_profile_picture(id: int, profile_picture: UploadFile = File(...), current_user: UserPhoto = Depends(get_current_user)):
-    if current_user.id != id and current_user.role_id != 2:
-        raise HTTPException(status_code=403, detail="Нет доступа для загрузки изображения")
+    if current_user.id == id and current_user.role_id == 2:
+        picture = await UserDAO.upload_image(entity_name="users", entity_id=id, file=profile_picture, image_field="profile_picture")
+        return picture
 
-    file_extension = profile_picture.filename.split(".")[-1].lower()
-    if file_extension not in ["jpg", "jpeg", "png"]:
-        raise HTTPException(status_code=400, detail="Неподдерживаемый формат файла. Поддерживаются только .jpg, .jpeg, .png.")
-    
-    file_size = await profile_picture.read()
-    if len(file_size) > 5 * 8 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Файл слишком большой. Максимум 5MB.")
+@router.get("/profile_picture/{id}", summary="Получить изображение профиля")
+async def get_profile_picture(id: int, current_user: UserPhoto = Depends(get_current_user)):
+    if current_user.id == id and current_user.role_id == 2:
+        picture = await UserDAO.get_image(entity_name="users", entity_id=id, image_field="profile_picture")
+        return picture
 
-    file_location = os.path.join(UPLOAD_FOLDER, f"{id}.{file_extension}")
-    
-    with open(file_location, "wb") as buffer:
-        buffer.write(file_size)
-
-    update_data = {"profile_picture": file_location}
-    current_user = await UserDAO.update(id=id, update_data=update_data)
-    if current_user:
-        return {"message": "Изображение профиля успешно загружено."}
-    else:
-        raise HTTPException(status_code=400, detail="Ошибка при обновлении данных пользователя.")
-
-@router.get("/profile_picture/{id}", summary="Получить изображение профиля пользователя")
-async def get_profile_picture(id: int):
-    file_path = os.path.join('uploads', f"{id}.jpg")
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Изображение не найдено")
-
-    return FileResponse(file_path)
-
-@router.delete("/profile_picture/{id}", summary="Удалить изображение профиля пользователя")
+@router.delete("/profile_picture/{id}", summary="Удалить изображение профиля")
 async def delete_profile_picture(id: int, current_user: UserPhoto = Depends(get_current_user)):
-    if current_user.id != id and current_user.role_id != 2:
-        raise HTTPException(status_code=403, detail="Нет доступа для удаления изображения")
-    
-    file_path = os.path.join(UPLOAD_FOLDER, f"{id}.jpg")
-    if os.path.exists(file_path):
-        os.remove(file_path)
-    
-    update_data = {"profile_picture": None}
-    updated_user = await UserDAO.update(id=id, update_data=update_data)
-    if updated_user:
-        return JSONResponse(content={"message": "Изображение профиля успешно удалено."})
-    else:
-        raise HTTPException(status_code=400, detail="Ошибка при удалении изображения профиля.")
+    if current_user.id == id and current_user.role_id == 2:
+        picture = await UserDAO.delete_image(entity_name="users", entity_id=id, image_field="profile_picture")
+        return picture
