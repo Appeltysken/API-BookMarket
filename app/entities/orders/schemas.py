@@ -1,12 +1,14 @@
 import re
 from pydantic import BaseModel, EmailStr, Field, validator, ConfigDict
 from typing import Optional
+from decimal import Decimal
 
 class Order(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     status: str = Field(..., description="Статус заказа")
     price: int = Field(None, description="Стоимость заказа")
+    price: Optional[Decimal] = Field(None, description="Стоимость заказа")
     user_id: int = Field(..., description="ID пользователя, которому принадлежит заказ")
     
 class OrderAdd(BaseModel):
