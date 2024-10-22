@@ -5,6 +5,7 @@ from app.entities.users.schemas import User as SUser
 from app.entities.reviews.schemas import Review as SReview, ReviewAdd as SReviewAdd
 from app.entities.reviews.schemas import ReviewUpdate
 from app.entities.users.dependencies import get_current_user
+from app.entities.books.dao import BookDAO
 
 router = APIRouter(prefix='/reviews', tags=['Работа с отзывами'])
 
@@ -17,19 +18,26 @@ async def get_all_reviews(request_body: RBReview = Depends(), current_user: SUse
 
 @router.get("/{id}", summary="Получить отзыв через ID")
 async def get_reviews_by_id(id: int, current_user: SUser = Depends(get_current_user)) -> SReview | dict:
-    if current_user.role_id == 2 or current_user.id == id:
-        result = await ReviewDAO.find_one_or_none_by_id(id)
-        if result is None:
-            return {'message': f'Книги по данному ID не найдено.'}
-        return result
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
+    result = await ReviewDAO.find_one_or_none_by_id(id)
+    if result is None:
+        return {'message': f'Отзыва по данному ID не найдено.'}
+    return result
 
 @router.post("/add", summary="Добавить отзыв")
 async def add_review(review: SReviewAdd, current_user: SUser = Depends(get_current_user)) -> dict:
+    book = await BookDAO.find_one_or_none_by_id(review.book_id)
+    if not book:
+        raise HTTPException(status_code=404, detail="Книга не найдена")
+    
     if current_user.role_id == 2 or current_user.id == id:
+        
         review_dict = review.dict()
         review_dict['user_id'] = current_user.id
         check = await ReviewDAO.add(**review_dict)
+        
+        if book.user_id == current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нельзя оставлять отзыв на собственную книгу")
+        
         if check:
             return {"message": "Новая книга добавлена.", "review": review}
         else:
