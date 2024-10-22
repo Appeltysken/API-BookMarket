@@ -11,10 +11,8 @@ router = APIRouter(prefix='/reviews', tags=['Работа с отзывами'])
 
 
 @router.get("/", summary="Получить все отзывы")
-async def get_all_reviews(request_body: RBReview = Depends(), current_user: SUser = Depends(get_current_user)) -> list[SReview]:
-    if current_user.role_id == 2:
-        return await ReviewDAO.find_all(**request_body.to_dict())
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
+async def get_all_reviews(request_body: RBReview = Depends()) -> list[SReview]:
+    return await ReviewDAO.find_all(**request_body.to_dict())
 
 @router.get("/{id}", summary="Получить отзыв через ID")
 async def get_reviews_by_id(id: int, current_user: SUser = Depends(get_current_user)) -> SReview | dict:
