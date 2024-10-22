@@ -13,3 +13,11 @@ app/__pycache__/database.cpython-312.pyc
 app/__pycache__/models.cpython-312.pyc
 /.env
 /uploads
+/app/__pycache__
+/app/entities/authors/__pycache__
+/app/entities/books/__pycache__
+/app/entities/orders/__pycache__
+/app/entities/reviews/__pycache__
+/app/entities/roles/__pycache__
+/app/entities/users/__pycache__
+/app/migration/versions/__pycache__
