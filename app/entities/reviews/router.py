@@ -37,12 +37,12 @@ async def add_review(review: SReviewAdd, current_user: SUser = Depends(get_curre
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нельзя оставлять отзыв на собственную книгу")
         
         if check:
-            return {"message": "Новая книга добавлена.", "review": review}
+            return {"message": "Новый отзыв добавлен.", "review": review}
         else:
-            return {"message": "Книгу не удалось добавить."}
+            return {"message": "Отзыв не удалось добавить."}
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
     
-@router.put("/update/{id}", summary="Обновить книгу по ID")
+@router.put("/update/{id}", summary="Обновить отзыв по ID")
 async def update_review_handler(id: int, new_data: ReviewUpdate, current_user: SUser = Depends(get_current_user)):
     if current_user.role_id == 2 or current_user.id == id:
         update_data = new_data.dict(exclude_unset=True)
@@ -51,17 +51,17 @@ async def update_review_handler(id: int, new_data: ReviewUpdate, current_user: S
         
         check = await ReviewDAO.update(id=id, update_data=update_data)
         if check:
-            return {"message": "Информация о книге успешно обновлена."}
+            return {"message": "Информация об отзыве успешно обновлена."}
         else:
-            raise HTTPException(status_code=400, detail="Ошибка при обновлении информации о книге.")
+            raise HTTPException(status_code=400, detail="Ошибка при обновлении информации об отзыве.")
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
     
-@router.delete("/delete/{id}", summary="Удалить книгу по ID")
+@router.delete("/delete/{id}", summary="Удалить отзыв по ID")
 async def delete_review_handler(id: int, current_user: SUser = Depends(get_current_user)):
     if current_user.role_id == 2 or current_user.id == id:
         check = await ReviewDAO.delete(id=id)
         if check:
-            return {"message": "Книга успешно удалена."}
+            return {"message": "Отзыв успешно удален."}
         else:
-            raise HTTPException(status_code=400, detail="Ошибка при удалении книги.")
+            raise HTTPException(status_code=400, detail="Ошибка при удалении отзыва.")
     raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
