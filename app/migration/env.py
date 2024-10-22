@@ -15,6 +15,9 @@ from app.database import DATABASE_URL, Base
 from app.entities.users.models import User
 from app.entities.orders.models import Order
 from app.entities.roles.models import Role
+from app.entities.authors.models import Author
+from app.entities.books.models import Book
+from app.entities.reviews.models import Review
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
