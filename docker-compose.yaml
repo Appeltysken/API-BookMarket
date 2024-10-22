@@ -1,51 +1,40 @@
+
 services:
   postgres:
-    image: postgres:latest
-    container_name: postgres_fast_api
+    container_name: postgres_container
+    image: postgres
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-      PGDATA: /var/lib/postgresql/data/pgdata
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data/pgdata
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
+    networks:
+      - postgres
     restart: unless-stopped
-    tty: true
-    stdin_open: true
-
-    command: >
-      postgres -c max_connections=1000
-               -c shared_buffers=256MB
-               -c effective_cache_size=768MB
-               -c maintenance_work_mem=64MB
-               -c checkpoint_completion_target=0.7
-               -c wal_buffers=16MB
-               -c default_statistics_target=100
   
   pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin_fast_api
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      # Здесь можно указать дополнительно:
+      # PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      # PGADMIN_DEFAULT_PASSWORD: admin 
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
     ports:
       - "8080:80"
-    depends_on:
+    networks:
       - postgres
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
     restart: unless-stopped
 
+networks:
+  postgres:
+    driver: bridge
+
 volumes:
-  pgdata:
-    driver: local
-  pgadmin_data:
-    driver: local
+    postgres:
+    pgadmin:
