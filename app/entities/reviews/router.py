@@ -6,6 +6,7 @@ from app.entities.reviews.schemas import Review as SReview, ReviewAdd as SReview
 from app.entities.reviews.schemas import ReviewUpdate
 from app.entities.users.dependencies import get_current_user
 from app.entities.books.dao import BookDAO
+from app.entities.roles.permissions import permissions
 
 router = APIRouter(prefix='/reviews', tags=['Работа с отзывами'])
 
@@ -22,46 +23,42 @@ async def get_reviews_by_id(id: int, current_user: SUser = Depends(get_current_u
     return result
 
 @router.post("/add", summary="Добавить отзыв")
+@permissions()
 async def add_review(review: SReviewAdd, current_user: SUser = Depends(get_current_user)) -> dict:
     book = await BookDAO.find_one_or_none_by_id(review.book_id)
     if not book:
         raise HTTPException(status_code=404, detail="Книга не найдена")
     
-    if current_user.role_id == 2 or current_user.id == id:
+    review_dict = review.dict()
+    review_dict['user_id'] = current_user.id
+    check = await ReviewDAO.add(**review_dict)
         
-        review_dict = review.dict()
-        review_dict['user_id'] = current_user.id
-        check = await ReviewDAO.add(**review_dict)
+    if book.user_id == current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нельзя оставлять отзыв на собственную книгу")
         
-        if book.user_id == current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нельзя оставлять отзыв на собственную книгу")
-        
-        if check:
-            return {"message": "Новый отзыв добавлен.", "review": review}
-        else:
-            return {"message": "Отзыв не удалось добавить."}
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
+    if check:
+        return {"message": "Новый отзыв добавлен.", "review": review}
+    else:
+        return {"message": "Отзыв не удалось добавить."}
     
+@permissions("self_or_admin")
 @router.put("/update/{id}", summary="Обновить отзыв по ID")
 async def update_review_handler(id: int, new_data: ReviewUpdate, current_user: SUser = Depends(get_current_user)):
-    if current_user.role_id == 2 or current_user.id == id:
-        update_data = new_data.dict(exclude_unset=True)
-        if not update_data:
-            raise HTTPException(status_code=400, detail="Нет данных для обновления.")
+    update_data = new_data.dict(exclude_unset=True)
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Нет данных для обновления.")
         
-        check = await ReviewDAO.update(id=id, update_data=update_data)
-        if check:
-            return {"message": "Информация об отзыве успешно обновлена."}
-        else:
-            raise HTTPException(status_code=400, detail="Ошибка при обновлении информации об отзыве.")
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
-    
+    check = await ReviewDAO.update(id=id, update_data=update_data)
+    if check:
+        return {"message": "Информация об отзыве успешно обновлена."}
+    else:
+        raise HTTPException(status_code=400, detail="Ошибка при обновлении информации об отзыве.")
+
+@permissions("self_or_admin")
 @router.delete("/delete/{id}", summary="Удалить отзыв по ID")
 async def delete_review_handler(id: int, current_user: SUser = Depends(get_current_user)):
-    if current_user.role_id == 2 or current_user.id == id:
-        check = await ReviewDAO.delete(id=id)
-        if check:
-            return {"message": "Отзыв успешно удален."}
-        else:
+    check = await ReviewDAO.delete(id=id)
+    if check:
+        return {"message": "Отзыв успешно удален."}
+    else:
             raise HTTPException(status_code=400, detail="Ошибка при удалении отзыва.")
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Нет доступа")
