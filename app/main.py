@@ -14,11 +14,8 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
     await init_roles()
-    
-@app.on_event("startup")
-async def startup_event():
     await create_default_admin()
-
+    
 @app.get("/", summary="Основная страница")
 def main_page():
     return {"message": "This is homepage."}
