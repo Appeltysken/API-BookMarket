@@ -6,6 +6,7 @@ from app.entities.users.rb import RBUser
 from app.entities.users.schemas import BaseUser, UserAuth, UserUpdate, UserPhoto
 from app.entities.users.dependencies import get_current_user
 from app.entities.roles.permissions import permissions
+from fastapi.security import OAuth2PasswordRequestForm
 import os
 
 if not os.path.exists("uploads"):
@@ -42,8 +43,10 @@ async def register_user(user_data: BaseUser) -> dict:
     
     return {"message": "Вы успешно зарегистрированы!"}
 
+from fastapi.security import OAuth2PasswordRequestForm
+
 @router.post("/login/", summary="Логин пользователя")
-async def auth_user(response: Response, user_data: UserAuth):
+async def auth_user(user_data: OAuth2PasswordRequestForm = Depends()):
     check = await authenticate_user(username=user_data.username, password=user_data.password)
     if check is None:
         raise HTTPException(
@@ -51,9 +54,8 @@ async def auth_user(response: Response, user_data: UserAuth):
             detail='Неверное имя пользователя или пароль'
         )
     access_token = create_access_token({"sub": str(check.id)})
-    response.set_cookie(key="users_access_token", value=access_token)
-    
-    return {'access_token': access_token, 'refresh_token': None}
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/me/", summary="Получить данные текущего пользователя")
 async def get_me(user_data: SUser = Depends(get_current_user)):
