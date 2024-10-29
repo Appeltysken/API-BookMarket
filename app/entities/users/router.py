@@ -43,8 +43,6 @@ async def register_user(user_data: BaseUser) -> dict:
     
     return {"message": "Вы успешно зарегистрированы!"}
 
-from fastapi.security import OAuth2PasswordRequestForm
-
 @router.post("/login/", summary="Логин пользователя")
 async def auth_user(user_data: OAuth2PasswordRequestForm = Depends()):
     check = await authenticate_user(username=user_data.username, password=user_data.password)

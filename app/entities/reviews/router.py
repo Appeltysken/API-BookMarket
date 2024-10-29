@@ -41,8 +41,8 @@ async def add_review(review: SReviewAdd, current_user: SUser = Depends(get_curre
     else:
         return {"message": "Отзыв не удалось добавить."}
     
-@permissions("self_or_admin")
 @router.put("/update/{id}", summary="Обновить отзыв по ID")
+@permissions("self_or_admin")
 async def update_review_handler(id: int, new_data: ReviewUpdate, current_user: SUser = Depends(get_current_user)):
     update_data = new_data.dict(exclude_unset=True)
     if not update_data:
@@ -54,8 +54,8 @@ async def update_review_handler(id: int, new_data: ReviewUpdate, current_user: S
     else:
         raise HTTPException(status_code=400, detail="Ошибка при обновлении информации об отзыве.")
 
-@permissions("self_or_admin")
 @router.delete("/delete/{id}", summary="Удалить отзыв по ID")
+@permissions("self_or_admin")
 async def delete_review_handler(id: int, current_user: SUser = Depends(get_current_user)):
     check = await ReviewDAO.delete(id=id)
     if check:
