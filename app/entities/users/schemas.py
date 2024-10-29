@@ -24,13 +24,15 @@ class BaseUser(BaseModel):
     @validator('password')
     @classmethod
     def validate_password(cls, value):
-        if not re.search(r'[A-Za-z]', value):
-            raise ValueError('Пароль должен содержать хотя бы одну букву')
-        if not re.search(r'\d', value):
-            raise ValueError('Пароль должен содержать хотя бы одну цифру')
-        if not re.search(r'\W', value):
-            raise ValueError('Пароль должен содержать хотя бы один специальный символ')
-        return value
+        if len(value) >= 8:
+            if not re.search(r'[A-Za-z]', value):
+                raise ValueError('Пароль должен содержать хотя бы одну букву')
+            if not re.search(r'\d', value):
+                raise ValueError('Пароль должен содержать хотя бы одну цифру')
+            if not re.search(r'\W', value):
+                raise ValueError('Пароль должен содержать хотя бы один специальный символ')
+            return value
+        raise ValueError("Длина пароля должна быть больше или равной 8 символам")
 
     @validator('sex')
     @classmethod
