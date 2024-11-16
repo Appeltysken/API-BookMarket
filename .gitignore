@@ -21,3 +21,4 @@ app/__pycache__/models.cpython-312.pyc
 /app/entities/roles/__pycache__
 /app/entities/users/__pycache__
 /app/migration/versions/__pycache__
+app/service/__pycache__/base.cpython-312.pyc

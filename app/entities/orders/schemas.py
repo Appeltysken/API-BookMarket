@@ -9,6 +9,7 @@ class Order(BaseModel):
     status: str = Field(..., description="Статус заказа")
     price: Optional[Decimal] = Field(None, description="Стоимость заказа")
     user_id: int = Field(..., description="ID пользователя, которому принадлежит заказ")
+    books_id: int = Field(..., description="ID книги, которая заказана")
     
     @validator('price')
     def validate_price(cls, value):
@@ -18,7 +19,7 @@ class Order(BaseModel):
     
 class OrderAdd(BaseModel):
     price: int = Field(None, description="Стоимость заказа")
-    user_id: int = Field(..., description="ID пользователя, которому принадлежит заказ")
+    books_id: int = Field(..., description="ID книги, которая заказана")
     
     @validator('price')
     def validate_price(cls, value):
@@ -32,7 +33,6 @@ class UpdateFilter(BaseModel):
 class OrderUpdate(BaseModel):
     status: Optional[str] = Field(None, description="Статус заказа")
     price: Optional[int] = Field(None, description="Стоимость заказа")
-    user_id: Optional[int] = Field(None, description="ID пользователя, которому принадлежит заказ")
     
     @validator('price')
     def validate_price(cls, value):

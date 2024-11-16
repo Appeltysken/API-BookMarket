@@ -22,6 +22,7 @@ class Book(BaseModel):
         return value
     
 class BookAdd(BaseModel):
+    name: str = Field(..., min_length=1, max_length=75, description="Название книги")
     price: int = Field(None, description="Стоимость заказа")
     author_id: Optional[int] = Field(None, description="ID автора произведения")
     genre: Optional[str] = Field(None, max_length=70, description="Жанр произведения")

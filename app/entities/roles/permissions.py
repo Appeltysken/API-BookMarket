@@ -10,7 +10,9 @@ def permissions(access_type: str = "authorized"):
         
         async def wrapper(id: int = None, current_user: SUser = Depends(get_current_user), *args, **kwargs):
             
-            if access_type == "authorized" and not current_user:
+            if access_type == "authorized":
+                if current_user:
+                    return await route_function(current_user=current_user, *args, **kwargs)
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Требуется авторизация.")
             
             if access_type == "self_or_admin":
