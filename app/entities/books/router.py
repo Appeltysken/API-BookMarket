@@ -24,12 +24,12 @@ async def get_book_by_id(id: int) -> SBook | dict:
 
 @router.post("/add", summary="Добавить книгу")
 @permissions()
-async def add_book(book: SBookAdd, current_user: SUser = Depends(get_current_user)) -> dict:
+async def add_book(book: SBookAdd, return_book: SBook, current_user: SUser = Depends(get_current_user)) -> dict:
     book_dict = book.dict()
     book_dict['user_id'] = current_user.id
     check = await BookDAO.add(**book_dict)
     if check:
-        return {"message": "Новая книга добавлена.", "book": book}
+        return {"message": "Новая книга добавлена.", "book": return_book}
     else:
         return {"message": "Книгу не удалось добавить."}
     

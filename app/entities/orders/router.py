@@ -14,14 +14,16 @@ router = APIRouter(prefix='/orders', tags=['Работа с заказами'])
 @permissions("admin")
 async def get_all_orders(request_body: RBOrder = Depends(), current_user: SUser = Depends(get_current_user)) -> list[SOrder]:
     return await OrderDAO.find_all(**request_body.to_dict())
-    
+
 @router.get("/{id}", summary="Получить заказ через ID")
 @permissions("self_or_admin")
-async def get_order_by_id(id: int, current_user: SUser = Depends(get_current_user)) -> SOrder | dict:
+async def get_order_by_id(
+    id: int, 
+    current_user: SUser = Depends(get_current_user)) -> SOrder | dict:
     result = await OrderDAO.find_one_or_none_by_id(id)
     if result is None:
         return {'message': f'Заказ по данному ID не найден.'}
-    return result
+    return SOrder.from_orm(result)
 
 @router.post("/add", summary="Добавить заказ")
 @permissions()

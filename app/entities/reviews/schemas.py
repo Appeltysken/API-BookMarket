@@ -38,7 +38,7 @@ class ReviewUpdate(BaseModel):
     @validator('mark')
     @classmethod
     def validate_price(cls, value):
-        if 1 <= value <= 5:
+        if not(1 <= value <= 5):
             raise ValueError('Оценка должна лежать в диапозоне от 1 до 5.')
         return value
     

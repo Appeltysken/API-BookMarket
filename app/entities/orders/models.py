@@ -11,8 +11,8 @@ class Order(Base):
     id: Mapped[int_pk]
     status: Mapped[str] = mapped_column(server_default=text("'Ожидает обработки'"))
     price: Mapped[int_null_true]
-    user_id: Mapped[int_null_true] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-    books_id: Mapped[int_null_true] = mapped_column(ForeignKey("books.id"), nullable=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
+    books_id: Mapped[int] = mapped_column(ForeignKey("books.id"), nullable=True)
     
     user: Mapped["User"] = relationship("User", back_populates="orders")
     books: Mapped[List["Book"]] = relationship("Book", back_populates="orders")

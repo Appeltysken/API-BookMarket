@@ -8,8 +8,8 @@ class Order(BaseModel):
     id: int
     status: str = Field(..., description="Статус заказа")
     price: Optional[Decimal] = Field(None, description="Стоимость заказа")
-    user_id: int = Field(..., description="ID пользователя, которому принадлежит заказ")
-    books_id: int = Field(..., description="ID книги, которая заказана")
+    user_id: Optional[int] = Field(..., description="ID пользователя, которому принадлежит заказ")
+    books_id: Optional[int] = Field(..., description="ID книги, которая заказана")
     
     @validator('price')
     def validate_price(cls, value):
